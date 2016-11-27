@@ -71,7 +71,7 @@ under the License.
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>mobi.v2com.demo.Main</mainClass>
+							<mainClass>mobi.v2com.demo.MainEdison</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
