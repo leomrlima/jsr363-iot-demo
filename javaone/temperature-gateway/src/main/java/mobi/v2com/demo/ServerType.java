@@ -17,7 +17,7 @@ under the License.
 package mobi.v2com.demo;
 
 /**
- * Type of backend server
+ * Type of back-end server
  * 
  * @author werner.keil@gmail.com
  *

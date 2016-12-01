@@ -34,30 +34,30 @@ import mobi.v2com.demo.sensor.TemperatureSensor;
  */
 public class ReaderPoster implements Runnable {
 
-	private TemperatureSensor sensor;
-	private MeasurementRecordPoster poster;
-	
-	public ReaderPoster(TemperatureSensor sensor, MeasurementRecordPoster poster) {
-		this.sensor = Objects.requireNonNull(sensor);
-		this.poster = Objects.requireNonNull(poster);
+    private TemperatureSensor sensor;
+    private MeasurementRecordPoster poster;
+
+    public ReaderPoster(TemperatureSensor sensor, MeasurementRecordPoster poster) {
+	this.sensor = Objects.requireNonNull(sensor);
+	this.poster = Objects.requireNonNull(poster);
+    }
+
+    public void run() {
+	LoggerFactory.getLogger(ReaderPoster.class).debug("Read...");
+	MeasurementRecord<Temperature> record = null;
+	synchronized (sensor) {
+	    record = sensor.readTemperature();
 	}
 
-	public void run() {
-		LoggerFactory.getLogger(ReaderPoster.class).debug("Read...");
-		MeasurementRecord<Temperature> record = null;
-		synchronized (sensor) {
-			record = sensor.readTemperature();
-		}
+	LoggerFactory.getLogger(ReaderPoster.class).debug("Post {}...", record);
 
-		LoggerFactory.getLogger(ReaderPoster.class).debug("Post {}...", record);
-
-		boolean result = false;
-		if (record != null && record.measurement != null) {
-			synchronized (poster) {
-				result = poster.post(record);	
-			}
-		}
-		LoggerFactory.getLogger(ReaderPoster.class).debug("Final result {}!", result);
+	boolean result = false;
+	if (record != null && record.measurement != null) {
+	    synchronized (poster) {
+		result = poster.post(record);
+	    }
 	}
+	LoggerFactory.getLogger(ReaderPoster.class).debug("Final result {}!", result);
+    }
 
 }
