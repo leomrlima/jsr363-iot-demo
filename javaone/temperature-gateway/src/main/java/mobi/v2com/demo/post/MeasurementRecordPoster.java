@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import mobi.v2com.demo.ServerType;
 import tec.uom.se.format.SimpleUnitFormat;
 
 /**
@@ -45,14 +46,17 @@ public class MeasurementRecordPoster {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String postTarget;
-
+    private final ServerType serverType;
+    
     /**
      * Creates a new Poster to the specified target.
      * 
-     * @param postTarget
+     * @param postTarget the POST URL
+     * @param serverType the back-end server type
      */
-    public MeasurementRecordPoster(String postTarget) {
+    public MeasurementRecordPoster(String postTarget, ServerType serverType) {
 	this.postTarget = Objects.requireNonNull(postTarget, "POST URL is null");
+	this.serverType = serverType;
     }
 
     /**

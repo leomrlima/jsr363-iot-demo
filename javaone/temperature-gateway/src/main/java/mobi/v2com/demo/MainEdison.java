@@ -1,5 +1,5 @@
 /*
-Copyright 2016 Leonardo de Moura Rocha Lima (leomrlima@gmail.com)
+Copyright 2016 Leonardo de Moura Rocha Lima (leomrlima@gmail.com) and others
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,30 +23,33 @@ import java.util.concurrent.TimeUnit;
 
 import mobi.v2com.demo.post.MeasurementRecordPoster;
 import mobi.v2com.demo.sensor.FileBasedTemperature;
+
 /**
- * Reads the internal temperature of Intel Edison processors and posts it every 10 seconds.
+ * Reads the internal temperature of Intel Edison processors and posts it every
+ * 10 seconds.
  * 
- * Usage:
- * $JAVA_HOME/bin/java -cp /home/edison/temperature-gateway-1.0.jar mobi.v2com.demo.MainEdison http://192.168.1.100:8080/temperature/resource/api/v1/sensors thermal_zone1
+ * Usage: $JAVA_HOME/bin/java -cp /home/edison/temperature-gateway-1.0.jar mobi.v2com.demo.MainEdison http://192.168.1.100:8080/temperature/resource/api/v1/sensors SPARK thermal_zone1
  * 
  * @author leomrlima@gmail.com
+ * @author werner.keil@gmail.com
  *
  */
 public class MainEdison {
 
-	public static void main(String... args) {
-		String url = args[0];
-		
-		// Create server link
-		MeasurementRecordPoster poster = new MeasurementRecordPoster(url);
-		ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+    public static void main(String... args) {
+	String url = args[0];
+	ServerType serverType = ServerType.valueOf(args[1].toUpperCase());
 
-		for (int a1 = 0; a1 < args.length -1; a1++) {
-			// Create temperature sensor
-			String id = args[a1+1];
-			FileBasedTemperature sensor = new FileBasedTemperature(id, "/sys/class/thermal/" + id + "/temp");
-			Runnable runner = new ReaderPoster(sensor, poster);
-			executorService.scheduleAtFixedRate(runner, 0, 10, TimeUnit.SECONDS);
-		}
+	// Create server link
+	MeasurementRecordPoster poster = new MeasurementRecordPoster(url, serverType);
+	ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+
+	for (int a1 = 2; a1 < args.length; a1++) {
+	    // Create temperature sensor
+	    String id = args[a1];
+	    FileBasedTemperature sensor = new FileBasedTemperature(id, "/sys/class/thermal/" + id + "/temp");
+	    Runnable runner = new ReaderPoster(sensor, poster);
+	    executorService.scheduleAtFixedRate(runner, 0, 10, TimeUnit.SECONDS);
 	}
+    }
 }
