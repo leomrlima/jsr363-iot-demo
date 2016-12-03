@@ -83,7 +83,7 @@ public class MeasurementRecordPoster {
 	    
 	    switch (serverType) {
 	    case DIANA:
-		    JsonObject json = Json.createObjectBuilder()
+		    final JsonObject json = Json.createObjectBuilder()
 		    	.add("sensorId", record.sensorId)
 		    	.add("time", record.time.toInstant().toEpochMilli() / 1000)
 		    	.add("quantity", String.valueOf(record.measurement))
@@ -97,8 +97,7 @@ public class MeasurementRecordPoster {
 			.post(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE.withCharset(StandardCharsets.UTF_8.name())));
 		    break;
 	    case SPARK:
-        	    /*
-        	     * client =
+        	    /* client =
         	     * ClientBuilder.newBuilder().register(JsonProcessingFeature.class)
         	     * .property(JsonGenerator.PRETTY_PRINTING, true).build(); WebTarget
         	     * path = client.target(postTarget);
@@ -108,36 +107,22 @@ public class MeasurementRecordPoster {
         	     * MediaType.APPLICATION_JSON_TYPE.withCharset(StandardCharsets.
         	     * UTF_8.name())));
         	     */
-        	    // client = ClientBuilder.newClient();
-        
-        	    // Response r = path.request().accept(MediaType.TEXT_PLAIN_TYPE)
-        	    // .post(Entity.entity(str, MediaType.TEXT_PLAIN));    
-        	    
     		    // TODO: use some lib for this conversion? maybe?
-    		    /*
-    		    JsonObject json = (JsonObject) Json.createObjectBuilder().add("name", record.sensorId)
-    			// .add("time", record.time.toInstant().toEpochMilli()/1000)
-    			.add("value", String.valueOf(record.measurement.getValue())).build();
-    			*/
-    		    String str = new StringBuilder().append("name=").append(record.sensorId).append("&").append("value=")
+    		    final String str = new StringBuilder().append("name=").append(record.sensorId).append("&").append("value=")
     			.append(String.valueOf(record.measurement.getValue())).append("&").append("unit=")
     			.append(SimpleUnitFormat.getInstance(SimpleUnitFormat.Flavor.ASCII)
     				.format(record.measurement.getUnit()))
     			.toString();
     
-    		    Form form = new Form()
+    		    final Form form = new Form()
     			.param("name", record.sensorId)
     			.param("value", String.valueOf(record.measurement.getValue()))
     			.param("unit", SimpleUnitFormat.getInstance(SimpleUnitFormat.Flavor.ASCII)
     				.format(record.measurement.getUnit()));
     			
-    		    // logger.debug("Converted to JSON as: {}", json);
     		    logger.debug("Converted to Form as: {}", str);
         		
     		    client = ClientBuilder.newClient();
-        //	    URI uri = new URI(postTarget + str);
-        //	    WebTarget path = client.target(uri);
-        //	    Response r = Response.created(uri).build();
         	    path = client.target(postTarget);
         	    
         	    r = path.request().accept(MediaType.TEXT_PLAIN).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED), Response.class);
